@@ -67,7 +67,7 @@ For PUT and POST requests the body of your request may include a JSON payload, a
 ## HTTP Responses
 Each response will include a `status` object, (if successful) a `data` result (`data` will be an object for single-record queries and an array for list queries) also the `version` of the api and the `valid_as_of` with the date of when the request was made. The `code` object contains an HTTP `status_code`, or `error_code` (if an error occurred - see [Error Codes]). The `data` contains the result of a successful request.  For example:
 
-``` JSON
+```no-highlight
 {
     "data": {
         ...
