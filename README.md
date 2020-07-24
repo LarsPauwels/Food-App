@@ -1,15 +1,8 @@
-<p align="center"><img src="https://res.cloudinary.com/dtfbvvkyp/image/upload/v1566331377/laravel-logolockup-cmyk-red.svg" width="400"></p>
+# Food App Rest API
 
-<p align="center">
-<a href="https://travis-ci.org/laravel/framework"><img src="https://travis-ci.org/laravel/framework.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://poser.pugx.org/laravel/framework/d/total.svg" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://poser.pugx.org/laravel/framework/v/stable.svg" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://poser.pugx.org/laravel/framework/license.svg" alt="License"></a>
-</p>
+## Overview
 
-## About Laravel
-
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+This API is a multi-channel communications platform that allows the sending, receiving and automating of conversations between a Business and a Customer. Zingle is typically interacted with by Businesses via a web browser to manage these conversations with their customers. The Zingle API provides functionality to developers to act on behalf of either the Business or the Customer. The Zingle iOS SDK provides mobile application developers an easy-to-use layer on top of the Zingle API.
 
 - [Simple, fast routing engine](https://laravel.com/docs/routing).
 - [Powerful dependency injection container](https://laravel.com/docs/container).
@@ -21,46 +14,39 @@ Laravel is a web application framework with expressive, elegant syntax. We belie
 
 Laravel is accessible, powerful, and provides tools required for large, robust applications.
 
-## Learning Laravel
+## Support
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+For API support, please email lars.pauwels@telenet.be.
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains over 1500 video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+## Authentication
 
-## Laravel Sponsors
+Access to the API is granted by providing your Bearer authentication token. This token is given when login in with you email and password.
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the Laravel [Patreon page](https://patreon.com/taylorotwell).
+```no-highlight
+GET https://foodapp.myware.be/api/v1/login
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Cubet Techno Labs](https://cubettech.com)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[British Software Development](https://www.britishsoftware.co)**
-- **[Webdock, Fast VPS Hosting](https://www.webdock.io/en)**
-- **[DevSquad](https://devsquad.com)**
-- [UserInsights](https://userinsights.com)
-- [Fragrantica](https://www.fragrantica.com)
-- [SOFTonSOFA](https://softonsofa.com/)
-- [User10](https://user10.com)
-- [Soumettre.fr](https://soumettre.fr/)
-- [CodeBrisk](https://codebrisk.com)
-- [1Forge](https://1forge.com)
-- [TECPRESSO](https://tecpresso.co.jp/)
-- [Runtime Converter](http://runtimeconverter.com/)
-- [WebL'Agence](https://weblagence.com/)
-- [Invoice Ninja](https://www.invoiceninja.com)
-- [iMi digital](https://www.imi-digital.de/)
-- [Earthlink](https://www.earthlink.ro/)
-- [Steadfast Collective](https://steadfastcollective.com/)
-- [We Are The Robots Inc.](https://watr.mx/)
-- [Understand.io](https://www.understand.io/)
-- [Abdel Elrafa](https://abdelelrafa.com)
-- [Hyper Host](https://hyper.host)
-- [Appoly](https://www.appoly.co.uk)
-- [OP.GG](https://op.gg)
-- [云软科技](http://www.yunruan.ltd/)
+{
+    "data": {
+        "user": {
+            "id": 1,
+            "email": "lars.pauwels@telenet.be",
+            "deleted_at": null,
+            "created_at": "2020-07-24T13:09:14.000000Z",
+            "updated_at": "2020-07-24T13:09:14.000000Z",
+            "role": {
+                "id": 1,
+                "name": "Admin",
+                "description": "I'm mad. You're mad.' 'How do you want to go with the Dormouse. 'Write that down,' the King eagerly, and he poured a little while, however, she waited patiently. 'Once,' said the cook."
+            }
+        },
+        **"token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJhdWQiOiIxIiwianRpIjoiZWI4MTM4NmVmMWEwZjM1ZDU3NzVkZWViN2NmZGVlY2MwZTIzOTdiNDU4YzA1Y2I2NzNiNjlkZTcwMmQzZDg1Y2U2YjlhYWZiN2VmYzI3NWUiLCJpYXQiOjE1OTU1OTc0MDcsIm5iZiI6MTU5NTU5NzQwNywiZXhwIjoxNjI3MTMzNDA3LCJzdWIiOiIxIiwic2NvcGVzIjpbXX0.kCYNRAgdVY9jQ-pV-okMu_7UFXgauYX7Ig2_GYlmy6oAnR70BbzIZjUd2Fv4MlvHhAhIx1YdYR_j8Sucx4zC2wyIiRSQyQ63pe7Q3_HcAKzRcGTF4JrAEAsaAzyMCF3qX2Z0Qqyup-0HoGOQKU875ovv7G0C3l4BbKxfnli33V3MWpJxEivgHyzRl7zoNALHDzIqfnmPFuECdFuD_H5KXXX5SnoHohsdJ_5pfMRgz5yp3JHvWe1jPkdtuwj1QipzksprgeCR7nUoPTeUiWsP9HN8Bpk1CcpXYUDRRSDDqlzH61zqG5JnpxWk7Yc6T4dbbsbEwhii4C3cLn13lD_vEiLqyO2Jnaj6tcZ-4btQ2hSnMH91w5A39wIGaa2N3iZbGi0IURPeaJyXpIGXnMdV-MJv5ydOgB4ZC_1h_RjtBhP2bke88aCcHZWj7N0XBpsZgT3E61b_FHwgNjDGtQRDVOcKlP2H2JGdnPDtzZev21c6sW-Jl8aPLJLgggbRXl7e4vERjstl7eSi18_8pLwcM36JlvAwLSZ6A505YO6ZnElPd3GCLPtfndI044kaz26tKXb2EqcPm6c0bpAnSOCQL8tQ07S0J-_yjWwk97eS9_iJ-i9lcHwLLbTaRm3mJvDFtE1K4kbUgPwI2bt62q59A7xI_PJBH0LPXCU9mKlCEC4"**
+    },
+    "version": "1.0.0",
+    "status": "success",
+    "code": 200,
+    "valid_as_of": "Fri, 24 Jul 2020 13:30:07"
+}
+```
 
 ## Contributing
 
