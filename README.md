@@ -84,13 +84,13 @@ Each response will be returned with one of the following HTTP status codes:
 * `500` `Server Error` An error on the server occurred
 
 ## Resources
-For a description of the available resources see the [Resource Overview](resource_overview.md) or the [Online Documentation](http://foodapp.myware.be/api/documentation).
+For a description of the available resources see the [Resource Overview](/documentation/v1/overview.md) or the [Online Documentation](http://foodapp.myware.be/api/documentation).
 
 ### Account
 - **[<code>POST</code> Login](/documentation/v1/accounts/POST_login.md)**
-- **[<code>POST</code> Register](/documentation/v1/accounts/)**
-- **[<code>GET</code> Logout](/documentation/v1/accounts/)**
-- **[<code>GET</code> All Users](/documentation/v1/accounts/)**
-- **[<code>GET</code> Get User By Id](/documentation/v1/accounts/)**
-- **[<code>PUT</code> Update User By Id](/documentation/v1/accounts/)**
-- **[<code>DELETE</code> Delete User By Id](/documentation/v1/accounts/)**
+- **[<code>POST</code> Register](/documentation/v1/accounts/POST_register.md)**
+- **[<code>GET</code> Logout](/documentation/v1/accounts/GET_logout.md)**
+- **[<code>GET</code> All Users](/documentation/v1/accounts/GET_users.md)**
+- **[<code>GET</code> Get User By Id](/documentation/v1/accounts/GET_userId.md)**
+- **[<code>PUT</code> Update User By Id](/documentation/v1/accounts/PUT_userId.md)**
+- **[<code>DELETE</code> Delete User By Id](/documentation/v1/accounts/DELETE_userId.md)**

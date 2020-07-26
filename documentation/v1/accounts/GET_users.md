@@ -1,4 +1,4 @@
-# All Users
+# All Accounts
 
     GET users
     

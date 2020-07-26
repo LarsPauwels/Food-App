@@ -10,7 +10,7 @@ Field | Data Type | Required | Description
 --- | --- | --- | ---
 email | string | Y | 
 password | string | Y | 
-role_id | string | Y |
+role_id | string | Y | The id that links the user and the role of the user
 
 ## Example
 ### Request
