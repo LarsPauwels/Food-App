@@ -13,13 +13,13 @@ For API support, please email lars.pauwels@telenet.be.
 Access to the API is granted by providing your Bearer authentication token. This token is given when login in with you email and password.
 
 ```no-highlight
-GET [domain] /api/v1/login
+GET https://foodapp.myware.be/api/v1/login
 
 {
     "data": {
         "user": {
             "id": 1,
-            "email": "lars.pauwels@telenet.be",
+            "email": "test@testing.com",
             "deleted_at": null,
             "created_at": "2020-07-24T13:09:14.000000Z",
             "updated_at": "2020-07-24T13:09:14.000000Z",
@@ -29,7 +29,7 @@ GET [domain] /api/v1/login
                 "description": "I'm mad. You're mad.' 'How do you want to go with the Dormouse. 'Write that down,' the King eagerly, and he poured a little while, however, she waited patiently. 'Once,' said the cook."
             }
         },
-        "token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJhdWQiOiIxIiwianRpIjoiZWI4MTM4NmVmMWEwZjM1ZDU3NzVkZWViN2NmZGVlY2MwZTIzOTdiNDU4YzA1Y2I2NzNiNjlkZTcwMmQzZDg1Y2U2YjlhYWZiN2VmYzI3NWUiLCJpYXQiOjE1OTU1OTc0MDcsIm5iZiI6MTU5NTU5NzQwNywiZXhwIjoxNjI3MTMzNDA3LCJzdWIiOiIxIiwic2NvcGVzIjpbXX0.kCYNRAgdVY9jQ-pV-okMu_7UFXgauYX7Ig2_GYlmy6oAnR70BbzIZjUd2Fv4MlvHhAhIx1YdYR_j8Sucx4zC2wyIiRSQyQ63pe7Q3_HcAKzRcGTF4JrAEAsaAzyMCF3qX2Z0Qqyup-0HoGOQKU875ovv7G0C3l4BbKxfnli33V3MWpJxEivgHyzRl7zoNALHDzIqfnmPFuECdFuD_H5KXXX5SnoHohsdJ_5pfMRgz5yp3JHvWe1jPkdtuwj1QipzksprgeCR7nUoPTeUiWsP9HN8Bpk1CcpXYUDRRSDDqlzH61zqG5JnpxWk7Yc6T4dbbsbEwhii4C3cLn13lD_vEiLqyO2Jnaj6tcZ-4btQ2hSnMH91w5A39wIGaa2N3iZbGi0IURPeaJyXpIGXnMdV-MJv5ydOgB4ZC_1h_RjtBhP2bke88aCcHZWj7N0XBpsZgT3E61b_FHwgNjDGtQRDVOcKlP2H2JGdnPDtzZev21c6sW-Jl8aPLJLgggbRXl7e4vERjstl7eSi18_8pLwcM36JlvAwLSZ6A505YO6ZnElPd3GCLPtfndI044kaz26tKXb2EqcPm6c0bpAnSOCQL8tQ07S0J-_yjWwk97eS9_iJ-i9lcHwLLbTaRm3mJvDFtE1K4kbUgPwI2bt62q59A7xI_PJBH0LPXCU9mKlCEC4"
+        "token": "..."
     },
     "version": "1.0.0",
     "status": "success",
@@ -44,7 +44,7 @@ The first part of the URI path specifies the API version you wish to access in t
 For example, version 1 of the API (most current) is accessible via:
 
 ```no-highlight
-[domain]/api/v1
+https://foodapp.myware.be/api/v1
 ```
 
 ## HTTP requests
@@ -87,12 +87,10 @@ Each response will be returned with one of the following HTTP status codes:
 For a description of the available resources see the [Resource Overview](resource_overview.md) or the [Online Documentation](http://foodapp.myware.be/api/documentation).
 
 ### Account
-- **[<code>POST</code> Login](/time_zones/GET_list.md)**
-- **[<code>POST</code> Register](/available_phone_numbers/GET_list.md)**
-- **[<code>GET</code> Logout](/time_zones/GET_list.md)**
-- **[<code>GET</code> All Users](/available_phone_numbers/GET_list.md)**
-- **[<code>GET</code> Get User By Id](/time_zones/GET_list.md)**
-- **[<code>PUT</code> Update User By Id](/available_phone_numbers/GET_list.md)**
-- **[<code>DELETE</code> Delete User By Id](/time_zones/GET_list.md)**
-
-[domain]: http://foodapp.myware.be/
+- **[<code>POST</code> Login](/documentation/v1/accounts/POST_login.md)**
+- **[<code>POST</code> Register](/documentation/v1/accounts/)**
+- **[<code>GET</code> Logout](/documentation/v1/accounts/)**
+- **[<code>GET</code> All Users](/documentation/v1/accounts/)**
+- **[<code>GET</code> Get User By Id](/documentation/v1/accounts/)**
+- **[<code>PUT</code> Update User By Id](/documentation/v1/accounts/)**
+- **[<code>DELETE</code> Delete User By Id](/documentation/v1/accounts/)**
