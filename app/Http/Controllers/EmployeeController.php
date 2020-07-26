@@ -97,7 +97,7 @@ class EmployeeController extends Controller {
      */ 
     public function getEmployeeById($id, $internal = false) {
         $employee = Employee::with('user', 'company')->find($id);
-        $employee->company->employees = [];
+        $employee->company->employees = null;
 
         if ($employee == null) {
            return ErrorHelper::notFound('employee', $id);

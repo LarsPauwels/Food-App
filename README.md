@@ -3,24 +3,17 @@
 ## Overview
 This API is a multi-channel communications platform that allows the sending, receiving and automating of conversations between a Business and a Customer. Zingle is typically interacted with by Businesses via a web browser to manage these conversations with their customers. The Zingle API provides functionality to developers to act on behalf of either the Business or the Customer. The Zingle iOS SDK provides mobile application developers an easy-to-use layer on top of the Zingle API.
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## Tutorial
+We provide a [Postman](https://www.getpostman.com/) collection with a set of requests that introduce the basic concepts of the API.  You will need an existing Zingle account with API access to run this tutorial. The Postman collection and more information are available [here](https://github.com/Zingle/rest-api/tree/master/.postman_tutorial).
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
-
-## Support
+### Support
 For API support, please email lars.pauwels@telenet.be.
 
 ## Authentication
 Access to the API is granted by providing your Bearer authentication token. This token is given when login in with you email and password.
 
 ```no-highlight
-GET https://foodapp.myware.be/api/v1/login
+GET [domain]/api/v1/login
 
 {
     "data": {
@@ -51,7 +44,7 @@ The first part of the URI path specifies the API version you wish to access in t
 For example, version 1 of the API (most current) is accessible via:
 
 ```no-highlight
-https://foodapp.myware.be/api/v1
+[domain]/api/v1
 ```
 
 ## HTTP requests
@@ -89,3 +82,17 @@ Each response will be returned with one of the following HTTP status codes:
 * `404` `Not found` An attempt was made to access a resource that does not exist in the API
 * `405` `Method not allowed` The resource being accessed doesn't support the method specified (GET, POST, etc.).
 * `500` `Server Error` An error on the server occurred
+
+## Resources
+For a description of the available resources see the [Resource Overview](resource_overview.md) or the [Online Documentation](http://foodapp.myware.be/api/documentation).
+
+### Account
+- **[<code>POST</code> Login](/time_zones/GET_list.md)**
+- **[<code>POST</code> Register](/available_phone_numbers/GET_list.md)**
+- **[<code>GET</code> Logout](/time_zones/GET_list.md)**
+- **[<code>GET</code> All Users](/available_phone_numbers/GET_list.md)**
+- **[<code>GET</code> Get User By Id](/time_zones/GET_list.md)**
+- **[<code>PUT</code> Update User By Id](/available_phone_numbers/GET_list.md)**
+- **[<code>DELETE</code> Delete User By Id](/time_zones/GET_list.md)**
+
+[domain]: http://foodapp.myware.be/
