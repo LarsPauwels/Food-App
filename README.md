@@ -13,7 +13,7 @@ For API support, please email lars.pauwels@telenet.be.
 Access to the API is granted by providing your Bearer authentication token. This token is given when login in with you email and password.
 
 ```no-highlight
-GET [domain]/api/v1/login
+GET [domain] /api/v1/login
 
 {
     "data": {
