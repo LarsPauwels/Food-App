@@ -18,4 +18,8 @@ class Role extends JsonResource {
             'description' => $this->description
         ];
     }
+
+    public function with($request) {
+        return WithTemplate::with();
+    }
 }

@@ -13,14 +13,14 @@ class Employee extends Model {
      * @var array
      */
     protected $fillable = [
-        'firstname', 'lastname', 'user_id', 'company_id'
+        'user_id', 'company_id'
     ];
 
     /**
      * Get the user for the employee
      */
     public function user() {
-        return $this->belongsTo('App\User');
+        return $this->belongsTo('App\User')->withTrashed();
     }
 
     /**

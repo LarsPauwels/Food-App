@@ -15,8 +15,10 @@ class CreateTimesheetsTable extends Migration
     {
         Schema::create('timesheets', function (Blueprint $table) {
             $table->id();
-            $table->date('date');
-            $table->time('time', 0);
+            $table->string('day');
+            $table->time('from', 0);
+            $table->time('until', 0);
+            $table->boolean('active');
             $table->timestamps();
         });
     }

@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "6a5aa42b7e8f56479ab85492c790be62",
+    "content-hash": "fc05ddb74594e6dfd4c75d743fec1954",
     "packages": [
         {
             "name": "asm89/stack-cors",
@@ -1242,22 +1242,22 @@
         },
         {
             "name": "laravel/passport",
-            "version": "v9.2.1",
+            "version": "v9.3.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/laravel/passport.git",
-                "reference": "0931d75235283d651b767d291a79cafba5d6ce68"
+                "reference": "38d9ee08974fed5d41376a52a994eaca615138a4"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/laravel/passport/zipball/0931d75235283d651b767d291a79cafba5d6ce68",
-                "reference": "0931d75235283d651b767d291a79cafba5d6ce68",
+                "url": "https://api.github.com/repos/laravel/passport/zipball/38d9ee08974fed5d41376a52a994eaca615138a4",
+                "reference": "38d9ee08974fed5d41376a52a994eaca615138a4",
                 "shasum": ""
             },
             "require": {
                 "ext-json": "*",
                 "firebase/php-jwt": "^5.0",
-                "guzzlehttp/guzzle": "^6.0",
+                "guzzlehttp/guzzle": "^6.0|^7.0",
                 "illuminate/auth": "^6.0|^7.0",
                 "illuminate/console": "^6.0|^7.0",
                 "illuminate/container": "^6.0|^7.0",
@@ -1311,7 +1311,7 @@
                 "oauth",
                 "passport"
             ],
-            "time": "2020-05-14T08:24:43+00:00"
+            "time": "2020-07-21T15:16:20+00:00"
         },
         {
             "name": "laravel/tinker",

@@ -24,6 +24,13 @@ class Topping extends Model {
     }
 
     /**
+     * Get the bases for the topping
+     */
+    public function bases() {
+        return $this->belongsTo('App\Currency');
+    }
+
+    /**
      * Get the orders for the topping
      */
     public function orders() {
@@ -31,9 +38,9 @@ class Topping extends Model {
     }
 
     /**
-     * Get the bases for the topping
+     * Get the bases order for the topping
      */
-    public function bases() {
+    public function basesOrder() {
         return $this->belongsToMany('App\Base', 'base__order__toppings', 'topping_id', 'base_order_id');
     }
 }

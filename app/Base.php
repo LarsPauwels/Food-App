@@ -24,6 +24,13 @@ class Base extends Model {
     }
 
     /**
+     * Get the toppings for the base
+     */
+    public function toppings() {
+        return $this->hasMany('App\Topping');
+    }
+
+    /**
      * Get the orders for the base
      */
     public function orders() {
@@ -31,9 +38,9 @@ class Base extends Model {
     }
 
     /**
-     * Get the orders for the base
+     * Get the toppings orders for the base
      */
-    public function toppings() {
-        return $this->belongsToMany('App\Base_Order_Topping', 'base__order__toppings', 'base_order_id', 'base__orders', 'base_id');
+    public function toppingsOrder() {
+        return $this->belongsToMany('App\Topping', 'base__order__toppings', 'base_order_id', 'base__orders', 'base_id');
     }
 }

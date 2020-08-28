@@ -17,6 +17,8 @@ class CreateToppingsTable extends Migration
             $table->id();
             $table->string('name');
             $table->string('price');
+            $table->boolean('isAvailable')->default(false);
+            $table->foreignId('base_id');
             $table->foreignId('currency_id');
             $table->timestamps();
         });

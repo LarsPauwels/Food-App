@@ -13,7 +13,7 @@ class Company extends Model {
      * @var array
      */
     protected $fillable = [
-        'user_id', 'detail_id'
+        'detail_id'
     ];
 
     /**
@@ -26,10 +26,10 @@ class Company extends Model {
     ];
 
     /**
-     * Get the user for the company
+     * Get the users for the company
      */
     public function user() {
-        return $this->belongsTo('App\User');
+        return $this->belongsToMany('App\User', 'user_company')->withTrashed();
     }
 
     /**
@@ -44,5 +44,19 @@ class Company extends Model {
      */
     public function detail() {
         return $this->belongsTo('App\Detail');
+    }
+
+    /**
+     * Get the orders for the company
+     */
+    public function orders() {
+        return $this->hasMany('App\Order');
+    }
+
+    /**
+     * Get the timesheets for the company
+     */
+    public function timesheets() {
+        return $this->hasMany('App\Timesheet');
     }
 }

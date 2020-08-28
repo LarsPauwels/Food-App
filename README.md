@@ -86,7 +86,7 @@ Each response will be returned with one of the following HTTP status codes:
 ## Resources
 For a description of the available resources see the [Resource Overview](/documentation/v1/overview.md) or the [Online Documentation](http://foodapp.myware.be/api/documentation).
 
-### Account
+### Account | Users
 - **[<code>POST</code> Login](/documentation/v1/accounts/POST_login.md)**
 - **[<code>POST</code> Register](/documentation/v1/accounts/POST_register.md)**
 - **[<code>GET</code> Logout](/documentation/v1/accounts/GET_logout.md)**
@@ -94,3 +94,31 @@ For a description of the available resources see the [Resource Overview](/docume
 - **[<code>GET</code> Get User By Id](/documentation/v1/accounts/GET_userId.md)**
 - **[<code>PUT</code> Update User By Id](/documentation/v1/accounts/PUT_userId.md)**
 - **[<code>DELETE</code> Delete User By Id](/documentation/v1/accounts/DELETE_userId.md)**
+
+### Admins
+- **[<code>GET</code> Login](/documentation/v1/admins/GET_admins.md)**
+- **[<code>GET</code> Register](/documentation/v1/admins/GET_adminId.md)**
+- **[<code>DELETE</code> Logout](/documentation/v1/admins/DELETE_adminId.md)**
+
+### Companies
+- **[<code>GET</code> Login](/documentation/v1/companies/POST_login.md)**
+- **[<code>GET</code> Register](/documentation/v1/companies/POST_register.md)**
+- **[<code>DELETE</code> Logout](/documentation/v1/companies/GET_logout.md)**
+
+### Employees
+- **[<code>GET</code> Login](/documentation/v1/employees/POST_login.md)**
+- **[<code>GET</code> Register](/documentation/v1/employees/POST_register.md)**
+- **[<code>DELETE</code> Logout](/documentation/v1/employees/GET_logout.md)**
+
+### Suppliers
+- **[<code>GET</code> Login](/documentation/v1/suppliers/POST_login.md)**
+- **[<code>GET</code> Register](/documentation/v1/suppliers/POST_register.md)**
+- **[<code>DELETE</code> Logout](/documentation/v1/suppliers/GET_logout.md)**
+
+### Orders
+- **[<code>GET</code> Login](/documentation/v1/orders/POST_login.md)**
+- **[<code>POST</code> Register](/documentation/v1/orders/POST_register.md)**
+- **[<code>PUT</code> Login](/documentation/v1/orders/POST_login.md)**
+- **[<code>GET</code> Register](/documentation/v1/orders/POST_register.md)**
+- **[<code>DELETE</code> Logout](/documentation/v1/orders/GET_logout.md)**
+- **[<code>GET</code> Login](/documentation/v1/orders/POST_login.md)**

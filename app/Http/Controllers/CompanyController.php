@@ -3,38 +3,66 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request; 
-use App\Http\Controllers\Controller; 
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Route;
-
-use App\Company;
 
 use App\Http\Resources\Company as CompanyResource;
 use App\Http\Resources\CompanyCollection as CompanyCollection;
 
 use App\Http\Helpers\ErrorHandler as ErrorHelper;
 
-/* REMOVE LATER */ 
-use App\Http\Helpers\ReturnHelper;
-use App\Http\Helpers\AuthorizationHelper;
+use App\Http\LogicControllers\CompanyController as LogicCompany;
+use App\Http\LogicControllers\ConnectionController as LogicConnection;
 
 class CompanyController extends Controller {
    	
    	/**
      * @OA\Get(
-     *     path="/v1/companies",
+     *     path="/v1/company",
      *     tags={"Companies"},
      *     summary="Get all companies.",
      *     operationId="company",
      *     security={{"bearerAuth":{}}},
      *     
      *     @OA\Parameter(
+     *         name="search",
+     *         in="query",
+     *         required=false,
+     *         @OA\Schema(
+     *             type="string"
+     *         )
+     *     ),
+     *     @OA\Parameter(
+     *         name="page",
+     *         in="query",
+     *         required=false,
+     *         @OA\Schema(
+     *             type="integer"
+     *         )
+     *     ),
+     *     @OA\Parameter(
+     *         name="page_size",
+     *         in="query",
+     *         required=false,
+     *         @OA\Schema(
+     *             type="integer"
+     *         )
+     *     ),
+     *     @OA\Parameter(
+     *         name="sort",
+     *         in="query",
+     *         required=false,
+     *         @OA\Schema(
+     *             type="string",
+     *             example="asc, desc" 
+     *         )
+     *     ),
+     *     @OA\Parameter(
      *         name="employees",
      *         description="Disable/Enable the employees return.",
      *         in="query",
      *         required=false,
      *         @OA\Schema(
-     *             type="boolean" 
+     *             type="boolean",
+     *             example="true, false"
      *         )
      *     ),  
      *     @OA\Response(
@@ -59,12 +87,10 @@ class CompanyController extends Controller {
      * @return \Illuminate\Http\Response 
      */ 
    	public function getCompanies(Request $req) {
-        $companies = Company::has('user')->get();
+        $companies = LogicCompany::getCompanies($req);
 
-        if ($req->employees === 'false' || empty($req->employees)) {
-            foreach ($companies as $company) {
-                $company->employees = [];
-            }
+        if (is_a($companies, 'Illuminate\Http\JsonResponse')) {
+            return $companies;
         }
 
         if (count($companies)) {
@@ -96,7 +122,8 @@ class CompanyController extends Controller {
      *         in="query",
      *         required=false,
      *         @OA\Schema(
-     *             type="boolean"
+     *             type="boolean",
+     *             example="true, false"
      *         )
      *     ),
      *     @OA\Response(
@@ -120,28 +147,149 @@ class CompanyController extends Controller {
      * 
      * @return \Illuminate\Http\Response 
      */ 
-   	public function getCompanyById($id, Request $req) {
-        $company = Company::has('user')->find($id);
+   	public function getCompanyById(Request $req, $id) {
+        $company = LogicCompany::getCompanyById($req, $id);
 
-        if ($req->employees === 'false' || empty($req->employees)) {
-            $company->employees = [];
+        if (is_a($company, 'Illuminate\Http\JsonResponse')) {
+            return $company;
         }
 
-        if ($company == null) {
-           return ErrorHelper::notFound('company', $id);
-        }
-
-        if (!empty($company)) {
+        if (!is_null($company)) {
             return new CompanyResource($company);
         }
-    }	
+
+        $message = 'Something went wrong! Try again later.';
+        return ErrorHelper::exceptions($message, 500);
+    }
+
+    /**
+     * @OA\Post(
+     *     path="/v1/company/{id}",
+     *     tags={"Companies"},
+     *     summary="Create a new company.",
+     *     operationId="companyCreate",
+     *     security={{"bearerAuth":{}}},
+     *      
+     *     @OA\RequestBody(
+     *         @OA\JsonContent(
+     *             type="object",
+     *             @OA\Property(property="email", type="string"),
+     *             @OA\Property(property="password", type="string"),
+     *             @OA\Property(property="name", type="string"),
+     *             @OA\Property(property="phone", type="string"),
+     *             @OA\Property(property="street", type="string"),
+     *             @OA\Property(property="number", type="string"),
+     *             @OA\Property(property="province", type="string"),
+     *             @OA\Property(property="city", type="string"),
+     *             @OA\Property(property="country", type="string")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Success",
+     *         @OA\MediaType(
+     *             mediaType="application/json",
+     *         )
+     *     ),
+     *     @OA\Response(
+     *          response=401,
+     *          description="Unauthorized"
+     *     ),
+     *     @OA\Response(
+     *          response=404,
+     *          description="not found"
+     *      ),
+     * )
+     *  
+     * Create a new company api 
+     * 
+     * @return \Illuminate\Http\Response 
+     */ 
+    public function createCompany(Request $req) {
+        $company = LogicCompany::createCompany($req);
+
+        if (is_a($company, 'Illuminate\Http\JsonResponse')) {
+            return $company;
+        }
+
+        if (!is_null($company)) {
+            return new CompanyResource($company);
+        }
+
+        $message = 'Something went wrong! Try again later.';
+        return ErrorHelper::exceptions($message, 500);
+    }
+
+    /**
+     * @OA\Put(
+     *     path="/v1/company/{id}",
+     *     tags={"Companies"},
+     *     summary="Update a company.",
+     *     operationId="companyUpdate",
+     *     security={{"bearerAuth":{}}},
+     *      
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         required=true,
+     *         @OA\Schema(
+     *             type="integer"
+     *         )
+     *     ),
+     *     @OA\RequestBody(
+     *         @OA\JsonContent(
+     *             type="object",
+     *             @OA\Property(property="name", type="string"),
+     *             @OA\Property(property="phone", type="string"),
+     *             @OA\Property(property="street", type="string"),
+     *             @OA\Property(property="number", type="string"),
+     *             @OA\Property(property="province", type="string"),
+     *             @OA\Property(property="city", type="string"),
+     *             @OA\Property(property="country", type="string")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Success",
+     *         @OA\MediaType(
+     *             mediaType="application/json",
+     *         )
+     *     ),
+     *     @OA\Response(
+     *          response=401,
+     *          description="Unauthorized"
+     *     ),
+     *     @OA\Response(
+     *          response=404,
+     *          description="not found"
+     *      ),
+     * )
+     *  
+     * Update company by id api 
+     * 
+     * @return \Illuminate\Http\Response 
+     */ 
+    public function updateCompanyById(Request $req, $id) {
+        $company = LogicCompany::updateCompanyById($req, $id);
+
+        if (is_a($company, 'Illuminate\Http\JsonResponse')) {
+            return $company;
+        }
+
+        if (!is_null($company)) {
+            return new CompanyResource($company);
+        }
+
+        $message = 'Something went wrong! Try again later.';
+        return ErrorHelper::exceptions($message, 500);
+    }
 
     /**
      * @OA\Delete(
-     *     path="/v1/companies/{id}",
+     *     path="/v1/company/{id}",
      *     tags={"Companies"},
-     *     summary="Delete company by id.",
-     *     operationId="deleteCompany",
+     *     summary="Delete a company.",
+     *     operationId="companyDelete",
      *     security={{"bearerAuth":{}}},
      *      
      *     @OA\Parameter(
@@ -168,28 +316,23 @@ class CompanyController extends Controller {
      *          description="not found"
      *      ),
      * )
-     * 
+     *  
      * Delete company by id api 
      * 
      * @return \Illuminate\Http\Response 
      */ 
-    public function deleteCompanyById($id, Request $req) {
-		$company = Company::with(['user' => function ($q) {
-            $q->withTrashed();
-        }])->find($id);
+    public function deleteCompanyById($id) {
+        $company = LogicCompany::deleteCompanyById($id);
 
-        if ($company == null) {
-            return ErrorHelper::notFound('company', $id);
+        if (is_a($company, 'Illuminate\Http\JsonResponse')) {
+            return $company;
         }
 
-        $userId = $company->user_id;
-        $token = $req->bearerToken();
-
-        $request = Request::create('/api/v1/users/'.$userId, 'DELETE');
-        $request->headers->set('Authorization', 'Bearer '.$token);
-
-        if (Route::dispatch($request)) {
+        if (!is_null($company)) {
             return new CompanyResource($company);
         }
+
+        $message = 'Something went wrong! Try again later.';
+        return ErrorHelper::exceptions($message, 500);
     }
 }

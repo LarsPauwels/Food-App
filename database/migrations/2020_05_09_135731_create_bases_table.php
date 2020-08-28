@@ -18,6 +18,8 @@ class CreateBasesTable extends Migration
             $table->string('name');
             $table->longText('description');
             $table->double('price');
+            $table->boolean('isAvailable')->default(false);
+            $table->foreignId('supplier_id');
             $table->foreignId('currency_id');
             $table->timestamps();
         });

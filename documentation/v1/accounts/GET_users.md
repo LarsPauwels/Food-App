@@ -2,13 +2,13 @@
 
     GET users
     
-Returns a list of [Accounts] belonging to the specified service
+Returns a list of [Accounts]
 
 ## Parameters
 ### URI Parameters
 Field | Data Type | Required | Description
 --- | --- | --- | ---
-Active | boolean | N | If `False` also deleted accounts will be given (`True`)
+Active | boolean | N | If `False` also deleted accounts will be given (default `True`)
 Amount | integer | N | The amount of accounts you want to display on one page (default 50, max. 200)
 Page | integer | N | The page number in the result set to return (default 1)
 

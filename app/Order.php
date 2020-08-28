@@ -17,6 +17,13 @@ class Order extends Model {
     ];
 
     /**
+     * Get the company for the order
+     */
+    public function company() {
+        return $this->belongsTo('App\Company');
+    }
+
+    /**
      * Get the employee for the order
      */
     public function employee() {

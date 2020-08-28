@@ -1,28 +1,58 @@
 <?php
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request; 
-use App\Http\Controllers\Controller; 
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Route;
-
-use App\Employee;
+use Illuminate\Http\Request;
 
 use App\Http\Resources\Employee as EmployeeResource;
 use App\Http\Resources\EmployeeCollection as EmployeeCollection;
 
 use App\Http\Helpers\ErrorHandler as ErrorHelper;
 
+use App\Http\LogicControllers\EmployeeController as LogicEmployee;
+
 class EmployeeController extends Controller {
 
     /**
      * @OA\Get(
-     *     path="/v1/employees",
+     *     path="/v1/employee/list",
      *     tags={"Employees"},
      *     summary="Get all employees.",
      *     operationId="employee",
      *     security={{"bearerAuth":{}}},
      *      
+     *     @OA\Parameter(
+     *         name="search",
+     *         in="query",
+     *         required=false,
+     *         @OA\Schema(
+     *             type="string"
+     *         )
+     *     ),
+     *     @OA\Parameter(
+     *         name="page",
+     *         in="query",
+     *         required=false,
+     *         @OA\Schema(
+     *             type="integer"
+     *         )
+     *     ),
+     *     @OA\Parameter(
+     *         name="page_size",
+     *         in="query",
+     *         required=false,
+     *         @OA\Schema(
+     *             type="integer"
+     *         )
+     *     ),
+     *     @OA\Parameter(
+     *         name="sort",
+     *         in="query",
+     *         required=false,
+     *         @OA\Schema(
+     *             type="string",
+     *             example="asc, desc" 
+     *         )
+     *     ),
      *     @OA\Response(
      *         response=200,
      *         description="Success",
@@ -44,11 +74,11 @@ class EmployeeController extends Controller {
      * 
      * @return \Illuminate\Http\Response 
      */ 
-    public function getEmployees() {
-        $employees = Employee::with('user', 'company')->get();
+    public function getEmployees(Request $req) {
+        $employees = LogicEmployee::getEmployees($req);
 
-        foreach ($employees as $employee) {
-            $employee->company->employees = [];
+        if (is_a($employees, 'Illuminate\Http\JsonResponse')) {
+            return $employees;
         }
 
         if (count($employees)) {
@@ -60,7 +90,83 @@ class EmployeeController extends Controller {
 
     /**
      * @OA\Get(
-     *     path="/v1/employees/{id}",
+     *     path="/v1/company/{companyId}/employee/list",
+     *     tags={"Employees"},
+     *     summary="Get all employees by company.",
+     *     operationId="employeeCompany",
+     *     security={{"bearerAuth":{}}},
+     *      
+     *     @OA\Parameter(
+     *         name="search",
+     *         in="query",
+     *         required=false,
+     *         @OA\Schema(
+     *             type="string"
+     *         )
+     *     ),
+     *     @OA\Parameter(
+     *         name="page",
+     *         in="query",
+     *         required=false,
+     *         @OA\Schema(
+     *             type="integer"
+     *         )
+     *     ),
+     *     @OA\Parameter(
+     *         name="page_size",
+     *         in="query",
+     *         required=false,
+     *         @OA\Schema(
+     *             type="integer"
+     *         )
+     *     ),
+     *     @OA\Parameter(
+     *         name="sort",
+     *         in="query",
+     *         required=false,
+     *         @OA\Schema(
+     *             type="string",
+     *             example="asc, desc" 
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Success",
+     *         @OA\MediaType(
+     *             mediaType="application/json",
+     *         )
+     *     ),
+     *     @OA\Response(
+     *              response=401,
+     *              description="Unauthorized"
+     *     ),
+     *     @OA\Response(
+     *          response=404,
+     *          description="not found"
+     *      ),
+     * )
+     *  
+     * Get all employees by company api 
+     * 
+     * @return \Illuminate\Http\Response 
+     */ 
+    public function getEmployeesByCompany(Request $req, $companyId) {
+        $employees = LogicEmployee::getEmployeesByCompany($req, $companyId);
+
+        if (is_a($employees, 'Illuminate\Http\JsonResponse')) {
+            return $employees;
+        }
+
+        if (count($employees)) {
+            return new EmployeeCollection($employees);
+        }
+
+        return ErrorHelper::notFound('employees');
+    }
+
+    /**
+     * @OA\Get(
+     *     path="/v1/employee/{id}",
      *     tags={"Employees"},
      *     summary="Get employee by id.",
      *     operationId="employeeId",
@@ -95,33 +201,36 @@ class EmployeeController extends Controller {
      * 
      * @return \Illuminate\Http\Response 
      */ 
-    public function getEmployeeById($id, $internal = false) {
-        $employee = Employee::with('user', 'company')->find($id);
-        $employee->company->employees = null;
+    public function getEmployeeById($id) {
+        $employee = LogicEmployee::getEmployeeById($id);
 
-        if ($employee == null) {
-           return ErrorHelper::notFound('employee', $id);
+        if (is_a($employee, 'Illuminate\Http\JsonResponse')) {
+            return $employee;
         }
 
-        if (!empty($employee)) {
-            return new EmployeeResource($employee);
+        if (!is_null($employee)) {
+            return new SupplierResource($employee);
         }
+
+        $message = 'Something went wrong! Try again later.';
+        return ErrorHelper::exceptions($message, 500);
     }
 
     /**
-     * @OA\Delete(
-     *     path="/v1/employees/{id}",
+     * @OA\Post(
+     *     path="/v1/company/{companyId}/employee",
      *     tags={"Employees"},
-     *     summary="Delete employee by id.",
-     *     operationId="deleteEmployee",
+     *     summary="Create a new employee.",
+     *     operationId="employeeCreate",
      *     security={{"bearerAuth":{}}},
      *      
-     *     @OA\Parameter(
-     *         name="id",
-     *         in="path",
-     *         required=true,
-     *         @OA\Schema(
-     *             type="integer"
+     *     @OA\RequestBody(
+     *         @OA\JsonContent(
+     *             type="object",
+     *             @OA\Property(property="email", type="string"),
+     *             @OA\Property(property="password", type="string"),
+     *             @OA\Property(property="firstname", type="string"),
+     *             @OA\Property(property="lastname", type="string")
      *         )
      *     ),
      *     @OA\Response(
@@ -141,27 +250,127 @@ class EmployeeController extends Controller {
      *      ),
      * )
      *  
+     * Create a new employee api 
+     * 
+     * @return \Illuminate\Http\Response 
+     */ 
+    public function createEmployee(Request $req, $companyId) {
+        $employee = LogicEmployee::createEmployee($req, $companyId);
+
+        if (is_a($employee, 'Illuminate\Http\JsonResponse')) {
+            return $employee;
+        }
+
+        if (!is_null($employee)) {
+            return new EmployeeResource($employee);
+        }
+
+        $message = 'Something went wrong! Try again later.';
+        return ErrorHelper::exceptions($message, 500);
+    }
+
+    /**
+     * @OA\Put(
+     *     path="/v1/employee/{id}",
+     *     tags={"Employees"},
+     *     summary="Update employee by id.",
+     *     operationId="employeeUpdate",
+     *     security={{"bearerAuth":{}}},
+     *      
+     *     @OA\RequestBody(
+     *         @OA\JsonContent(
+     *             type="object",
+     *             @OA\Property(property="email", type="string"),
+     *             @OA\Property(property="password", type="string"),
+     *             @OA\Property(property="firstname", type="string"),
+     *             @OA\Property(property="lastname", type="string")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Success",
+     *         @OA\MediaType(
+     *             mediaType="application/json",
+     *         )
+     *     ),
+     *     @OA\Response(
+     *          response=401,
+     *          description="Unauthorized"
+     *     ),
+     *     @OA\Response(
+     *          response=404,
+     *          description="not found"
+     *      ),
+     * )
+     *  
+     * Update employee by id api 
+     * 
+     * @return \Illuminate\Http\Response 
+     */ 
+    public function updateEmployeeById(Request $req, $id) {
+        $employee = LogicEmployee::updateEmployeeById($req, $id);
+
+        if (is_a($employee, 'Illuminate\Http\JsonResponse')) {
+            return $employee;
+        }
+
+        if (!is_null($employee)) {
+            return new EmployeeResource($employee);
+        }
+
+        $message = 'Something went wrong! Try again later.';
+        return ErrorHelper::exceptions($message, 500);
+    }
+
+    /**
+     * @OA\Delete(
+     *     path="/v1/employee/{id}",
+     *     tags={"Employees"},
+     *     summary="Delete employee by id.",
+     *     operationId="deleteEmployee",
+     *     security={{"bearerAuth":{}}},
+     * 
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         required=true,
+     *         @OA\Schema(
+     *             type="integer"
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Success",
+     *         @OA\MediaType(
+     *             mediaType="application/json",
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=401,
+     *         description="Unauthorized"
+     *     ),
+     *     @OA\Response(
+     *          response=404,
+     *          description="not found"
+     *      ),
+     * )
+     * 
      * Delete employee by id api 
      * 
      * @return \Illuminate\Http\Response 
      */ 
-    public function deleteEmployeeById($id, Request $req) {
-        $employee = Employee::with(['user' => function ($q) {
-            $q->withTrashed();
-        }])->find($id);
+    public function deleteEmployeeById($id) {
+        $employee = LogicEmployee::deleteEmployeeById($id);
 
-        if ($employee == null) {
-            return ErrorHelper::notFound('employee', $id);
+        if (is_a($employee, 'Illuminate\Http\JsonResponse')) {
+            return $employee;
         }
 
-        $userId = $employee->user_id;
-        $token = $req->bearerToken();
-
-        $request = Request::create('/api/v1/users/'.$userId, 'DELETE');
-        $request->headers->set('Authorization', 'Bearer '.$token);
-
-        if (Route::dispatch($request)) {
+        if (!is_null($employee)) {
             return new EmployeeResource($employee);
         }
+
+        $message = 'Something went wrong! Try again later.';
+        return ErrorHelper::exceptions($message, 500);
     }
 }

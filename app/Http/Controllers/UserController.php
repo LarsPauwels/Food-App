@@ -1,199 +1,65 @@
 <?php
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request; 
-use App\Http\Controllers\Controller;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Validator;
-use Illuminate\Support\Facades\Route;
-use Illuminate\Support\Facades\Gate;
-use Hash;
+use Illuminate\Http\Request;
 
-use App\User;
-use App\Employee;
-use App\Supplier;
-
-use App\Http\Resources\Auth as AuthResource;
 use App\Http\Resources\User as UserResource;
 use App\Http\Resources\UserCollection as UserCollection;
 
-use App\Http\Helpers\ValidationHelper;
 use App\Http\Helpers\ErrorHandler as ErrorHelper;
 
+use App\Http\LogicControllers\UserController as UserLogic;
+
 class UserController extends Controller {
-
-    /**
-     * @OA\Post(
-     *     path="/v1/login",
-     *     tags={"Users"},
-     *     summary="Login into account.",
-     *     operationId="login",
-     * 
-     *     @OA\RequestBody(
-     *         @OA\JsonContent(
-     *             type="object",
-     *             @OA\Property(property="email", type="string"),
-     *             @OA\Property(property="password", type="string")
-     *         )
-     *     ),
-     *
-     *     @OA\Response(
-     *         response=200,
-     *         description="Success",
-     *         @OA\MediaType(
-     *             mediaType="application/json",
-     *         )
-     *     ),
-     *     @OA\Response(
-     *         response=400,
-     *         description="Invalid request"
-     *     ),
-     * )
-     *
-     * login API 
-     * 
-     * @return \Illuminate\Http\Response 
-     */
-    public function login(Request $req) {
-        $creadentials = $req->only(['email', 'password']);
-
-        if(Auth::attempt($creadentials)) { 
-            $user = Auth::user(); 
-            $token =  $user->createToken('Personal Access Token')->accessToken;
-            $user->token = $token;
-            $user->message = 'You are successfully logged in!';
-
-            return new AuthResource($user);
-        } 
-
-        $message = 'Your e-mail or password is incorrect.';
-        return ErrorHelper::exceptions($message, 400);
-    }
-
-    /**
-     * @OA\Post(
-     *     path="/v1/register",
-     *     tags={"Users"},
-     *     summary="Create new user.",
-     *     operationId="createUser",
-     *     security={{"bearerAuth":{}}},
-     *      
-     *     @OA\RequestBody(
-     *         @OA\JsonContent(
-     *             type="object",
-     *             @OA\Property(property="email", type="string"),
-     *             @OA\Property(property="password", type="string"),
-     *             @OA\Property(property="role_id", type="integer")
-     *         )
-     *     ),
-     *     @OA\Response(
-     *         response=200,
-     *         description="Success",
-     *         @OA\MediaType(
-     *             mediaType="application/json",
-     *         )
-     *     ),
-     *     @OA\Response(
-     *          response=401,
-     *          description="Unauthorized"
-     *     ),
-     *     @OA\Response(
-     *          response=404,
-     *          description="not found"
-     *      ),
-     *     @OA\Response(
-     *          response=400,
-     *          description="Invalid request"
-     *      ),
-     * )
-     *  
-     * Create order api 
-     * 
-     * @return \Illuminate\Http\Response 
-     */ 
-    public function register(Request $req) {
-        $validation = ValidationHelper::auth($req);
-
-        if ($validation !== true) {
-            return ErrorHelper::exceptions($validation, 400);
-        }
-
-        $user = new User;
-
-        $user->email = $req->email;
-        $user->password = Hash::make($req->password);
-        $user->role_id = $req->role_id;
-        $user->created_at = date('Y-m-d H:i:s');
-        $user->updated_at = date('Y-m-d H:i:s');
-
-        if ($user->save()) { 
-            $request = Request::create('/api/v1/login', 'POST', $req->all());
-            return Route::dispatch($request);
-        }
-
-        $message = 'Something went wrong! Try again later.';
-        return ErrorHelper::exceptions($message, 500);
-    }
-
     /**
      * @OA\Get(
-     *     path="/v1/logout",
-     *     tags={"Users"},
-     *     summary="Logout of account.",
-     *     operationId="logout",
-     *     security={{"bearerAuth":{}}},
-     *    
-     *     @OA\Response(
-     *         response=200,
-     *         description="Success",
-     *         @OA\MediaType(
-     *             mediaType="application/json",
-     *         )
-     *     ),
-     *     @OA\Response(
-     *         response=401,
-     *         description="Unauthorized"
-     *     ),
-     * )
-     *
-     * Logout api
-     *
-     * @return \Illuminate\Http\Response 
-     */
-    public function logout(Request $req) {
-        $user = Auth::user();
-        $user->token = $req->bearerToken();
-        $user->message = 'You are successfully logged out!';
-
-        $req->user()->token()->revoke();
-
-        return new AuthResource($user);
-    }
-
-    /**
-     * @OA\Get(
-     *     path="/v1/users",
+     *     path="/v1/user/list",
      *     tags={"Users"},
      *     summary="Get all users.",
      *     operationId="users",
      *     security={{"bearerAuth":{}}},
-     * 
+     *
+     *     @OA\Parameter(
+     *         name="search",
+     *         in="query",
+     *         required=false,
+     *         @OA\Schema(
+     *             type="string"
+     *         )
+     *     ),
+     *     @OA\Parameter(
+     *         name="page",
+     *         in="query",
+     *         required=false,
+     *         @OA\Schema(
+     *             type="integer"
+     *         )
+     *     ),
+     *     @OA\Parameter(
+     *         name="page_size",
+     *         in="query",
+     *         required=false,
+     *         @OA\Schema(
+     *             type="integer"
+     *         )
+     *     ),
+     *     @OA\Parameter(
+     *         name="sort",
+     *         in="query",
+     *         required=false,
+     *         @OA\Schema(
+     *             type="string",
+     *             example="asc, desc" 
+     *         )
+     *     ),
      *     @OA\Parameter(
      *         name="active",
      *         description="Return only active/deleted users.",
      *         in="query",
      *         required=false,
      *         @OA\Schema(
-     *             type="boolean"
-     *         )
-     *     ), 
-     *     @OA\Parameter(
-     *         name="amount",
-     *         description="Return amount in one page (min. 1 and max. 200).",
-     *         in="query",
-     *         required=false,
-     *         @OA\Schema(
-     *             type="integer"
+     *             type="boolean",
+     *             example="true, false"
      *         )
      *     ),   
      *     @OA\Response(
@@ -218,40 +84,22 @@ class UserController extends Controller {
      * @return \Illuminate\Http\Response 
      */ 
     public function getUsers(Request $req) {
-        if (Gate::authorize('admin')) {
-            $active = $req->active;
-            $page = (int)$req->amount;
+        $users = UserLogic::getUsers($req);
 
-            if (empty($active)) {
-                $active = true;
-            }
-
-            if ($req->amount === null) {
-                $page = 50;
-            }
-
-            if ($page <= 0 || $page > 200) {
-                $message = 'The amount value needs to be minimal 1 or maximum 200.';
-                return ErrorHelper::exceptions($message, 400);
-            }
-
-            if ($active === 'true') {
-                $users = User::paginate($page);
-            } else {
-                $users = User::withTrashed()->paginate($page);
-            }
-
-            if (count($users)) {
-                return new UserCollection($users);
-            }
-
-            return ErrorHelper::notFound('users');
+        if (is_a($users, 'Illuminate\Http\JsonResponse')) {
+            return $users;
         }
+
+        if (count($users)) {
+            return new UserCollection($users);
+        }
+
+        return ErrorHelper::notFound('users');
     }
 
     /**
      * @OA\Get(
-     *     path="/v1/users/{id}",
+     *     path="/v1/user/{id}",
      *     tags={"Users"},
      *     summary="Get user by id.",
      *     operationId="usersId",
@@ -287,22 +135,209 @@ class UserController extends Controller {
      * @return \Illuminate\Http\Response 
      */ 
     public function getUserById($id) {
-        if (Gate::any(['admin', 'user'], $id)) {
-            $user = User::find($id);
+        $user = UserLogic::getUserById($id);
 
-            if ($user == null) {
-               return ErrorHelper::notFound('user', $id);
-            }
+        if (is_a($user, 'Illuminate\Http\JsonResponse')) {
+            return $user;
+        }
 
-            if (!empty($user)) {
-                return new UserResource($user);
-            }
+        if (is_null($user)) {
+           return ErrorHelper::notFound('user', $id);
+        }
+
+        if (!empty($user)) {
+            return new UserResource($user);
         }
     }
 
     /**
+     * @OA\Post(
+     *     path="/v1/user",
+     *     tags={"Users"},
+     *     summary="Create a new user.",
+     *     operationId="UserCreate",
+     *     security={{"bearerAuth":{}}},
+     * 
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         required=true,
+     *         @OA\Schema(
+     *             type="integer"
+     *         )
+     *     ),
+     *     @OA\RequestBody(
+     *         @OA\JsonContent(
+     *             type="object",
+     *             @OA\Property(property="email", type="string"),
+     *             @OA\Property(property="password", type="string"),
+     *             @OA\Property(property="firstname", type="string"),
+     *             @OA\Property(property="lastname", type="string")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Success",
+     *         @OA\MediaType(
+     *             mediaType="application/json",
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=401,
+     *         description="Unauthorized"
+     *     ),
+     *     @OA\Response(
+     *          response=404,
+     *          description="not found"
+     *      ),
+     * )
+     * 
+     * Create a new user api
+     * 
+     * @return \Illuminate\Http\Response 
+     */ 
+    public function createUser(Request $req) {
+        $user = UserLogic::createUser($req);
+
+        if (is_a($user, 'Illuminate\Http\JsonResponse')) {
+            return $user;
+        }
+
+        if (!is_null($user)) {
+            return new UserResource($user);
+        }
+
+        $message = 'Something went wrong! Try again later.';
+        return ErrorHelper::exceptions($message, 500);
+    }
+
+    /**
+     * @OA\Post(
+     *     path="/v1/user/company",
+     *     tags={"Users"},
+     *     summary="Create a new user for company.",
+     *     operationId="UserCreateCompany",
+     *     security={{"bearerAuth":{}}},
+     * 
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         required=true,
+     *         @OA\Schema(
+     *             type="integer"
+     *         )
+     *     ),
+     *     @OA\RequestBody(
+     *         @OA\JsonContent(
+     *             type="object",
+     *             @OA\Property(property="email", type="string"),
+     *             @OA\Property(property="password", type="string"),
+     *             @OA\Property(property="firstname", type="string"),
+     *             @OA\Property(property="lastname", type="string"),
+     *             @OA\Property(property="company_id", type="integer")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Success",
+     *         @OA\MediaType(
+     *             mediaType="application/json",
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=401,
+     *         description="Unauthorized"
+     *     ),
+     *     @OA\Response(
+     *          response=404,
+     *          description="not found"
+     *      ),
+     * )
+     * 
+     * Create a new user api
+     * 
+     * @return \Illuminate\Http\Response 
+     */ 
+    public function createUserCompany(Request $req) {
+        $user = UserLogic::createUserCompany($req);
+
+        if (is_a($user, 'Illuminate\Http\JsonResponse')) {
+            return $user;
+        }
+
+        if (!is_null($user)) {
+            return new UserResource($user);
+        }
+
+        $message = 'Something went wrong! Try again later.';
+        return ErrorHelper::exceptions($message, 500);
+    }
+
+    /**
+     * @OA\Post(
+     *     path="/v1/user/supplier",
+     *     tags={"Users"},
+     *     summary="Create a new user for supplier.",
+     *     operationId="UserCreateSupplier",
+     *     security={{"bearerAuth":{}}},
+     * 
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         required=true,
+     *         @OA\Schema(
+     *             type="integer"
+     *         )
+     *     ),
+     *     @OA\RequestBody(
+     *         @OA\JsonContent(
+     *             type="object",
+     *             @OA\Property(property="email", type="string"),
+     *             @OA\Property(property="password", type="string"),
+     *             @OA\Property(property="firstname", type="string"),
+     *             @OA\Property(property="lastname", type="string"),
+     *             @OA\Property(property="supplier_id", type="integer")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Success",
+     *         @OA\MediaType(
+     *             mediaType="application/json",
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=401,
+     *         description="Unauthorized"
+     *     ),
+     *     @OA\Response(
+     *          response=404,
+     *          description="not found"
+     *      ),
+     * )
+     * 
+     * Create a new user api
+     * 
+     * @return \Illuminate\Http\Response 
+     */ 
+    public function createUserSupplier(Request $req) {
+        $user = UserLogic::createUserSupplier($req);
+
+        if (is_a($user, 'Illuminate\Http\JsonResponse')) {
+            return $user;
+        }
+
+        if (!is_null($user)) {
+            return new UserResource($user);
+        }
+
+        $message = 'Something went wrong! Try again later.';
+        return ErrorHelper::exceptions($message, 500);
+    }
+
+    /**
      * @OA\Put(
-     *     path="/v1/users/{id}",
+     *     path="/v1/user/{id}",
      *     tags={"Users"},
      *     summary="Update user by id.",
      *     operationId="updateUsers",
@@ -320,7 +355,9 @@ class UserController extends Controller {
      *         @OA\JsonContent(
      *             type="object",
      *             @OA\Property(property="email", type="string"),
-     *             @OA\Property(property="password", type="string")
+     *             @OA\Property(property="password", type="string"),
+     *             @OA\Property(property="firstname", type="string"),
+     *             @OA\Property(property="lastname", type="string")
      *         )
      *     ),
      *     @OA\Response(
@@ -345,34 +382,23 @@ class UserController extends Controller {
      * @return \Illuminate\Http\Response 
      */ 
     public function updateUserById(Request $req, $id) {
-        if (Gate::authorize('user', $id)) {
-            $validation = ValidationHelper::auth($req);
-            if ($validation !== true) {
-                return ErrorHelper::exceptions($validation, 400);
-            }
+        $user = UserLogic::updateUserById($req, $id);
 
-            $user = User::find($id);
-
-            if ($user == null) {
-                return new ErrorResource(ErrorHelper::notFound('user', $id));
-            }
-
-            $user->email = $req->email;
-            $user->password = Hash::make($req->password);
-            $user->updated_at = date('Y-m-d H:i:s');
-
-            if ($user->save()) {
-                return new UserResource($user);
-            }
-
-            $message = 'Something went wrong! Try again later.';
-            return ErrorHelper::exceptions($message, 500);
+        if (is_a($user, 'Illuminate\Http\JsonResponse')) {
+            return $user;
         }
+
+        if (!is_null($user)) {
+            return new UserResource($user);
+        }
+
+        $message = 'Something went wrong! Try again later.';
+        return ErrorHelper::exceptions($message, 500);
     }
 
     /**
      * @OA\Delete(
-     *     path="/v1/users/{id}",
+     *     path="/v1/user/{id}",
      *     tags={"Users"},
      *     summary="Delete user by id.",
      *     operationId="deleteUsers",
@@ -403,35 +429,68 @@ class UserController extends Controller {
      *      ),
      * )
      * 
-     * Get user by id api 
+     * Delete user by id api 
      * 
      * @return \Illuminate\Http\Response 
      */ 
     public function deleteUserById($id) {
-        if (Gate::authorize('user', $id)) {
-            $user = User::find($id);
+        $user = UserLogic::deleteUserById($id);
 
-            if ($user == null) {
-                return ErrorHelper::notFound('user', $id);
-            }
+        if (is_a($user, 'Illuminate\Http\JsonResponse')) {
+            return $user;
+        }
 
-            if ($user->delete()) {
-                $employee = User::withTrashed()->findorfail($id)->employee;
-                $supplier = User::withTrashed()->findorfail($id)->supplier;
+        if (!is_null($user)) {
+            return new UserResource($user);
+        }
+    }
 
-                $orders = [];
-                if (!empty($employee)) {
-                    $orders = Employee::findorfail($employee->id)->orders;
-                } else if (!empty($supplier)) {
-                    $orders = Supplier::findorfail($supplier->id)->orders;
-                }
-                
-                foreach ($orders as $order) {
-                    $order->delete();
-                }
+    /**
+     * @OA\Patch(
+     *     path="/v1/user/{id}",
+     *     tags={"Users"},
+     *     summary="Restore user by id.",
+     *     operationId="patchUsers",
+     *     security={{"bearerAuth":{}}},
+     * 
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         required=true,
+     *         @OA\Schema(
+     *             type="integer"
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Success",
+     *         @OA\MediaType(
+     *             mediaType="application/json",
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=401,
+     *         description="Unauthorized"
+     *     ),
+     *     @OA\Response(
+     *          response=404,
+     *          description="not found"
+     *      ),
+     * )
+     * 
+     * Restore user by id api 
+     * 
+     * @return \Illuminate\Http\Response 
+     */ 
+    public function restoreUserById($id) {
+        $user = UserLogic::restoreUserById($id);
 
-                return new UserResource($user);
-            }
+        if (is_a($user, 'Illuminate\Http\JsonResponse')) {
+            return $user;
+        }
+
+        if (!is_null($user)) {
+            return new UserResource($user);
         }
     }
 }

@@ -17,6 +17,7 @@ class CreateSuppliersTable extends Migration
             $table->id();
             $table->foreignId('user_id');
             $table->foreignId('detail_id');
+            $table->boolean('locked')->default(false);
             $table->timestamps();
         });
     }

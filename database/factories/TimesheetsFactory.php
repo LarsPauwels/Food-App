@@ -7,7 +7,9 @@ use Faker\Generator as Faker;
 
 $factory->define(\App\Timesheet::class, function (Faker $faker) {
     return [
-        'date' => $faker->date($format = 'Y-m-d', $max = 'now'),
-        'time' => $faker->time($format = 'H:i:s', $max = 'now')
+        'day' => $faker->dayOfWeek(),
+        'from' => $faker->time($format = 'H:i'),
+        'until' => $faker->time($format = 'H:i'),
+        'active' => random_int(0, 1)
     ];
 });

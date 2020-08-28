@@ -21,4 +21,8 @@ class Address extends JsonResource {
             'country' => $this->country
         ];
     }
+
+    public function with($request) {
+        return WithTemplate::with();
+    }
 }

@@ -5,6 +5,8 @@ namespace App\Http\Resources;
 use Illuminate\Http\Resources\Json\JsonResource;
 use App\Http\Resources\Company as CompanyResource;
 
+use App\Http\Helpers\ResourceHelper;
+
 class Employee extends JsonResource {
     /**
      * Transform the resource into an array.
@@ -15,14 +17,14 @@ class Employee extends JsonResource {
     public function toArray($request) {
         return [
             'id' => $this->id,
-            'firstname' => $this->firstname,
-            'lastname' => $this->lastname,
+            'firstname' => $this->user->firstname,
+            'lastname' => $this->user->lastname,
+            'email' => $this->user->email,
+            'orders' => ResourceHelper::amountOrders($this->id),
+            'profit' => $this->profit ? $this->profit : ResourceHelper::employeeProfit($this->id, 'today'),
+            'average_price' => ResourceHelper::averagePrice($this->id),
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
-            'user' => [
-                'user_id' => $this->user_id,
-                'email' => $this->user->email
-            ],
             'company' => new CompanyResource($this->company)
         ];
     }

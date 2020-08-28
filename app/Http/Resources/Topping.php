@@ -17,9 +17,14 @@ class Topping extends JsonResource {
             'id' => $this->id,
             'name' => $this->name,
             'price' => $this->price,
-            'currency' => CurrencyModel::find($this->currency_id)->name,
+            'currency' => $this->currency,
+            'isAvailable' => intval($this->isAvailable),
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
         ];
+    }
+
+    public function with($request) {
+        return WithTemplate::with();
     }
 }

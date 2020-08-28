@@ -13,14 +13,14 @@ class Supplier extends Model {
      * @var array
      */
     protected $fillable = [
-        'user_id', 'detail_id'
+        'detail_id'
     ];
 
     /**
-     * Get the user for the supplier
+     * Get the users for the supplier
      */
     public function user() {
-        return $this->belongsTo('App\User');
+        return $this->belongsToMany('App\User', 'user_supplier')->withTrashed();
     }
 
     /**
@@ -34,7 +34,7 @@ class Supplier extends Model {
      * Get the timesheets for the supplier
      */
     public function timesheets() {
-        return $this->belongsToMany('App\Timesheet', 'timesheet__suppliers');
+        return $this->hasMany('App\Timesheet');
     }
 
     /**

@@ -14,13 +14,14 @@ class Admin extends JsonResource {
     public function toArray($request) {
         return [
             'id' => $this->id,
-            'firstname' => $this->firstname,
-            'lastname' => $this->lastname,
+            'firstname' => $this->user->firstname,
+            'lastname' => $this->user->lastname,
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
             'user' => [
                 'user_id' => $this->user_id,
-                'email' => $this->user->email
+                'email' => $this->user->email,
+                'deleted_at' => $this->user->deleted_at
             ]
         ];
     }

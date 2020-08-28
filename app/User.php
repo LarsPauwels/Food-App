@@ -2,7 +2,7 @@
 
 namespace App;
 
-use Laravel\Passport\HasAPITokens;
+use Laravel\Passport\HasApiTokens;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -18,7 +18,7 @@ class User extends Authenticatable {
      * @var array
      */
     protected $fillable = [
-        'email', 'password', 'role_id'
+        'email', 'password', 'firstname', 'lastname', 'role_id'
     ];
 
     /**
@@ -45,17 +45,17 @@ class User extends Authenticatable {
     }
 
     /**
-     * Get the company for the user
+     * Get the companies for the user
      */
     public function company() {
-        return $this->hasOne('App\Company');
+        return $this->belongsToMany('App\Company', 'user_company');
     }
 
     /**
-     * Get the supplier for the user
+     * Get the suppliers for the user
      */
     public function supplier() {
-        return $this->hasOne('App\Supplier');
+        return $this->belongsToMany('App\Supplier', 'user_supplier');
     }
 
     /**
