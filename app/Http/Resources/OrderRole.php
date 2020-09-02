@@ -17,7 +17,7 @@ class OrderRole extends JsonResource {
         return [
             'id' => $this->id,
             'date' => $this->delivery_date,
-            'employee' => $this->employee->firstname ? $this->employee->firstname." ".$this->employee->lastname : null,
+            'employee' => $this->employee ? $this->employee->user->firstname." ".$this->employee->user->lastname : null,
             'restaurant' => $this->supplier->detail->name,
             'products' => OrderBaseResource::collection($this->base_orders)
         ];
